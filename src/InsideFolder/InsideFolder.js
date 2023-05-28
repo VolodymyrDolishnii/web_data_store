@@ -135,6 +135,7 @@ export function InsideFolder({ folders }) {
         updateFolder(selectedFolder.id, newFolder);
         setTextContent('');
         setFileName('');
+        setIsContentAdding(false);
     }
 
     function addImageContentToFolder() {
@@ -150,6 +151,7 @@ export function InsideFolder({ folders }) {
         updateFolder(selectedFolder.id, newFolder);
         setFileName('');
         setSelectedFile(null);
+        setIsContentAdding(false);
     }
 
     function addAudioContentToFolder() {
@@ -165,6 +167,7 @@ export function InsideFolder({ folders }) {
         updateFolder(selectedFolder.id, newFolder);
         setFileName('');
         setSelectedFile(null);
+        setIsContentAdding(false);
     }
 
     function addAnyContentToFolder() {
@@ -180,6 +183,7 @@ export function InsideFolder({ folders }) {
         updateFolder(selectedFolder.id, newFolder);
         setFileName('');
         setSelectedFile(null);
+        setIsContentAdding(false);
     }
 
     // const handleConfirmClick = () => {
@@ -833,7 +837,7 @@ export function InsideFolder({ folders }) {
                                                                 Now you can change the content
                                                             </p>
                                                         )}
-                                                        <button
+                                                        {/* <button
                                                             className='edit-text-button'
                                                             onClick={() => {
                                                                 if (isTextEditable) {
@@ -844,7 +848,7 @@ export function InsideFolder({ folders }) {
                                                             }}
                                                         >
                                                             <img src={EditText} width={15} height={15} />
-                                                        </button>
+                                                        </button> */}
                                                     </div>
                                                     <p
                                                         className='content-modal-text'
@@ -906,7 +910,7 @@ export function InsideFolder({ folders }) {
                                                                 Now you can change the content
                                                             </p>
                                                         )}
-                                                        <button
+                                                        {/* <button
                                                             className='edit-text-button'
                                                             onClick={() => {
                                                                 if (isTextEditable) {
@@ -917,7 +921,7 @@ export function InsideFolder({ folders }) {
                                                             }}
                                                         >
                                                             <img src={EditText} width={15} height={15} />
-                                                        </button>
+                                                        </button> */}
                                                     </div>
                                                     <button
                                                         className='remove-button'
@@ -954,7 +958,7 @@ export function InsideFolder({ folders }) {
                                                                 Now you can change the content
                                                             </p>
                                                         )}
-                                                        <button
+                                                        {/* <button
                                                             className='edit-text-button'
                                                             onClick={() => {
                                                                 if (isTextEditable) {
@@ -965,7 +969,7 @@ export function InsideFolder({ folders }) {
                                                             }}
                                                         >
                                                             <img src={EditText} width={15} height={15} />
-                                                        </button>
+                                                        </button> */}
                                                     </div>
                                                     <button
                                                         className='remove-button'

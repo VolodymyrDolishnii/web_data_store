@@ -1,15 +1,21 @@
+/* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import '../App.css';
+
 import { addFolderDispatch, removeFolderDispatch } from '../folders/forders';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from '../loader/Loader';
 import { postFolder, removeFolder } from '../api/foldersData';
+import CsvDownloadButton from 'react-json-to-csv';
+import MyWorker from 'worker-loader!./generateFileData.js';
 
 import Cross from '../assets/cross.svg';
+import Download from '../assets/download-svg.svg';
+
+import '../App.css';
 
 export function Folder({ folders, isLoading, isError }) {
   const dispatch = useDispatch();
@@ -19,15 +25,25 @@ export function Folder({ folders, isLoading, isError }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [filteredFolders, setFilteredFolders] = useState([]);
+  const [separator, setSeparator] = useState(',');
+  const [fileData, setFileData] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(null);
+  const [uniqueValue, setUniqueValue] = useState(0);
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsGenerating(false);
+    setFileData([]);
+  }, [folders]);
 
   useEffect(() => {
     const newFolders = folders?.filter((item) => {
-        if (item.name.toLowerCase().includes(query.toLowerCase())) {
-            return item;
-        }
+      if (item.name.toLowerCase().includes(query.toLowerCase())) {
+        return item;
+      }
     });
     setFilteredFolders(newFolders);
-}, [query, folders]);
+  }, [query, folders]);
 
   function deleteAllFolders() {
     folders.forEach((folder) => {
@@ -35,6 +51,27 @@ export function Folder({ folders, isLoading, isError }) {
       dispatch(removeFolderDispatch(folder));
     });
   }
+
+  const getKeys = (data) => {
+    let arr = [];
+    if (data) {
+      Object.keys(data).map((key) => {
+        arr = Object.keys(data[key]);
+      });
+    }
+    return arr;
+  };
+
+  useEffect(() => {
+    const worker = new MyWorker();
+    worker.onmessage = function (event) {
+      setFileData(event.data.payload.fileData);
+      setIsGenerating(false);
+    }
+    worker.postMessage({ folders });
+  }, [uniqueValue]);
+
+  console.log(fileData);
 
   return (
     <div className="App">
@@ -62,23 +99,139 @@ export function Folder({ folders, isLoading, isError }) {
                 Delete all folders
               </button>
             </div>
-            <div style={{ position: 'relative', marginTop: '30px', marginLeft: '100px' }}>
-              <input
-                type="text"
-                className="form__field-folder"
-                placeholder="What are you looking for?"
-                name="folder"
-                id='folder'
-                required
-                autoComplete='off'
-                value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value);
+            <div style={{
+              position: 'relative',
+              marginTop: '30px',
+              paddingLeft: '100px',
+              paddingRight: '150px',
+              display: 'flex',
+              justifyContent: 'space-between'
+            }}
+            >
+              <div>
+                <input
+                  type="text"
+                  className="form__field-folder"
+                  placeholder="What are you looking for?"
+                  name="folder"
+                  id='folder'
+                  required
+                  autoComplete='off'
+                  value={query}
+                  onChange={(event) => {
+                    setQuery(event.target.value);
+                  }}
+                  disabled={isAdding}
+                  style={{ cursor: isAdding ? 'not-allowed' : 'pointer' }}
+                />
+                <label
+                  htmlFor="folder"
+                  className="form__label-folder"
+                  style={{ cursor: isAdding ? 'not-allowed' : 'pointer' }}
+                >
+                  Item name
+                </label>
+                {query.length > 0 && (
+                  <p style={{ marginTop: '10px' }}>Search result: {filteredFolders.length}</p>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  if (isVisible) {
+                    setIsVisible(false);
+                  } else {
+                    setIsVisible(true);
+                  }
                 }}
-              />
-              <label htmlFor="folder" className="form__label-folder">Item name</label>
-              {query.length > 0 && (
-                <p style={{ marginTop: '10px' }}>Search result: {filteredFolders.length}</p>
+                className='file-export-button'
+              >
+                <p style={{ fontSize: '20px' }}>Export file</p> <img src={Download} width={20} height={20} />
+              </button>
+              {isVisible && (
+                <div
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
+                  className='export-menu'
+                >
+                  <div className='separators-list'>
+                    <div
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSeparator(',');
+                      }}
+                    >
+                      <input
+                        type={'radio'}
+                        id={'comma'}
+                        name={'group1'}
+                        defaultChecked
+                      />
+                      <label
+                        htmlFor={'comma'}
+                      >
+                        Comma
+                      </label>
+                    </div>
+                    <div
+                      onClick={() => setSeparator(';')}
+                    >
+                      <input
+                        type={'radio'}
+                        id={'semicolon'}
+                        name={'group1'}
+                      />
+                      <label
+                        htmlFor={'semicolon'}
+                      >
+                        Semicolon
+                      </label>
+                    </div>
+                    <div
+                      onClick={() => setSeparator('\t')}
+                    >
+                      <input
+                        type={'radio'}
+                        id={'tab'}
+                        name={'group1'}
+                      />
+                      <label
+                        htmlFor={'tab'}
+                      >
+                        Tab
+                      </label>
+                    </div>
+                  </div>
+                  {fileData.length > 0 ? (
+                    <CsvDownloadButton
+                      data={fileData}
+                      filename={`${moment().format('YYYY-MM-DD_HHmm')}_Folders.csv`}
+                      delimiter={separator}
+                      headers={getKeys(fileData)}
+                      className='download-file-button'
+                    >
+                      Download
+                    </CsvDownloadButton>
+                  ) : (
+                    <>
+                      {isGenerating ? (
+                        <div className='export-loader'>
+                          <Loader />
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setUniqueValue(new Date().valueOf());
+                            setIsGenerating(true);
+                          }}
+                          className='download-file-button'
+                        >
+                          Export
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
               )}
             </div>
             <button
@@ -164,7 +317,17 @@ export function Folder({ folders, isLoading, isError }) {
             )}
             <ul className='folders-list'>
               {filteredFolders?.map(folder => (
-                <li className='folder' key={folder.date} onClick={() => navigate(folder.id)}>
+                <li
+                  className='folder'
+                  key={folder.date}
+                  onClick={() => {
+                    if (isAdding) {
+                      return;
+                    }
+                    navigate(folder.id)
+                  }}
+                  style={{ cursor: isAdding ? 'not-allowed' : 'pointer' }}
+                >
                   <button
                     className='remove-button'
                     onClick={(event) => {
@@ -172,7 +335,7 @@ export function Folder({ folders, isLoading, isError }) {
                       removeFolder(folder.id);
                       dispatch(removeFolderDispatch(folder));
                     }}
-                    style={{ top: '28.5px' }}
+                    style={{ top: '28.5px', cursor: isAdding ? 'not-allowed' : 'pointer' }}
                   >
                     <img src={Cross} height={20} width={10} alt={'Remove button'} />
                   </button>
