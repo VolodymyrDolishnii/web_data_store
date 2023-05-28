@@ -1,39 +1,550 @@
-.App {
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #dddddd;
+  border-radius: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 15px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0; padding: 0;
+}
+
+audio {
+  filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%);
+}
+
+.add-folder {
+  background-color: white;
+  font-size: 20px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 2px solid #d72631;
+  color: #077b8a;
+
+  transition: all 0.5s ease;
+}
+
+.add-folder:disabled {
+  background: #e8e8e8;
+  color: black;
+  cursor: not-allowed;
+  border-color: #bbbbbb;
+}
+
+.add-folder:disabled:hover {
+  scale: 1;
+}
+
+.add-folder:hover {
+  scale: 1.05;
+}
+
+.add-modal {
+  position: fixed;
+  z-index: 10;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 250px;
+  border-radius: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: #a2d5c6;
+}
+
+.add-modal-header {
+  position: absolute;
+  top: 10px;
+  color: white;
+}
+
+.add-modal-button {
+  margin-top: 5px;
+  padding: 5px 20px;
+  border: none;
+  border-radius: 15px;
+  background-color: rgba(69, 189, 153, 0.8);
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+
+  transition: all 0.3s linear, scale 0.5s ease-out;
+}
+
+.add-modal-button:hover {
+  scale: 1.10;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.add-modal-button:disabled {
+  background-color: rgba(100, 104, 103, 0.8);
+  color: rgb(74, 74, 74);
+  cursor: not-allowed;
+}
+
+.folders-list {
+  padding: 100px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.folder {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* gap: 20px; */
+  justify-content: space-around;
+  align-items: center;
+  width: 240px;
+  height: 150px;
+  border-radius: 15px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+.folder:hover {
+  scale: 1.05;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.folder-header {
+  font-weight: bold;
+  font-size: larger;
+  width: 170px;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.remove-button {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: larger;
+  border-radius: 50%;
+  cursor: pointer;
+
+  transition: all 0.2s linear;
+}
+
+.remove-button:hover {
+  background: #ff8080;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 1.3rem;
+  color: #fff;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+.form__field::placeholder {
+  color: transparent;
+}
+.form__field:placeholder-shown ~ .form__label {
+  font-size: 1.3rem;
+  cursor: text;
+  top: 20px;
+}
+.form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: #9b9b9b;
+}
+.form__field:focus {
+  padding-bottom: 6px;
+  font-weight: 700;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #11998e, #38ef7d);
+  border-image-slice: 1;
+}
+.form__field:focus ~ .form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: #11998e;
+  font-weight: 700;
+}
+.form__field:required, .form__field:invalid {
+  box-shadow: none;
+}
+
+.form__group {
+  position: relative;
+  padding: 15px 0 0;
+  margin-top: 10px;
+  width: 50%;
+}
+
+.folder-content-page_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #a2d5c6;
+  padding: 0 30px;
+  padding-bottom: 10px;
+}
+
+.folder-content-page-functions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-folder-item {
+  margin-top: 30px;
+  padding: 5px 20px;
+  border: none;
+  border-radius: 15px;
+  background-color: rgba(69, 189, 153, 0.8);
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+
+  transition: all 0.3s linear;
+}
+
+.add-folder-item:disabled {
+  background-color: #d4d4d4;
+  cursor: not-allowed;
+  color: black;
+}
+
+.add-folder-item:disabled:hover {
+  scale: 1;
+}
+
+.add-folder-item:hover {
+  scale: 1.03;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.folders-panel {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 50px;
+  padding-left: 100px;
+  padding-right: 150px;
+}
+
+.delete-all-folders {
+  padding: 5px 20px;
+  border: none;
+  border-radius: 15px;
+  background-color: #ff8080;
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+
+  transition: all 0.3s linear, scale 0.3s ease-in-out;
+}
+
+.delete-all-folders:disabled {
+  background-color: #d4d4d4;
+  cursor: not-allowed;
+}
+
+.delete-all-folders:disabled:hover {
+  scale: 1;
+}
+
+.delete-all-folders:hover {
+  scale: 1.05;
+}
+
+.inside-folder-header {
+  color: #FFFFFF;
+  max-width: 400px;
+  word-wrap: break-word;
+  position: relative;
+}
+
+*[full]:hover::after {
+  content: attr(full);
+  position: absolute;
+  color: rgba(69, 189, 153, 0.8);
+  top: 90%;
+  left: 0;
+  max-width: 200px;
+  word-wrap: break-word;
+  font-size: small;
+  background: #FFFFFF;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.copy-button {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  left: 10px;
+}
+
+.copy-button:hover {
+  scale: 1.05;
+}
+
+.copy-message {
+  color: #118f84;
+  font-size: small;
+}
+
+.deleting-modal {
+  position: fixed;
+  z-index: 10;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 100px;
+  border-radius: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ff6060;
+  padding: 30px;
+}
+
+.deleting-modal_buttons-block {
+  display: flex;
+  width: 300px;
+  justify-content: space-between;
+}
+
+.deleting-modal_text {
+  font-size: larger;
+  font-weight: 700;
+}
+
+.deleting-modal_button {
+  padding: 5px 20px;
+  border: none;
+  border-radius: 15px;
+  background-color: #ff8080;
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+
+  transition: all 0.3s linear, scale 0.3s ease-in-out;
+}
+
+.deleting-modal_button:hover {
+  scale: 1.1;
+}
+
+.add-content-modal {
+  position: fixed;
+  z-index: 10;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  border-radius: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(79, 216, 175);
+  padding: 30px;
+}
+
+.add-content-modal_text {
+  color: #FFFFFF;
+  font-size: larger;
+  font-weight: 700;
+}
+
+.add-content-modal_content-type-block {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.add-content-modal_button {
+  padding: 5px 20px;
+  border: none;
+  border-radius: 15px;
+  background-color: rgba(88, 236, 191, 0.8);
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+
+  transition: all 0.3s linear, scale 0.3s ease-in-out;
+}
+
+.add-content-modal_button:disabled {
+  background: #d4d4d4;
+  cursor: not-allowed;
+  color: black;
+}
+
+.add-content-modal_button:disabled:hover {
+  scale: 1;
+}
+
+.add-content-modal_button:hover {
+  scale: 1.1;
+}
+
+.radio-label {
+  color: #FFFFFF;
+  font-size: large;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  height: 130px;
+  border-radius: 15px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  cursor: pointer;
+  background: #E8E8E8;
+
+  transition: all 0.3s ease;
+  padding: 10px;
+}
+
+.content:hover {
+  scale: 1.05;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.content-name {
+  position: relative;
+  font-size: larger;
+  font-weight: 700;
+  width: 90%;
+  word-wrap: break-word;
+}
+
+.content-type {
+  font-size: small;
+  color: #118f84;
+}
+
+.content-date {
+  font: medium;
+  position: absolute;
+  bottom: 10px;
+  left: 0px;
+  width: 100%;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-float infinite 3s ease-in-out;
-  }
-}
-
-.App-header {
-  min-height: 100vh;
+.content-modal {
+  position: fixed;
+  z-index: 10;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 250px;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  gap: 10px;
+  background-color: #efefef;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  padding: 10px;
+  padding-bottom: 20px;
 }
 
-.App-link {
-  color: rgb(112, 76, 182);
+.content-modal-functions {
+  display: flex;
+  justify-content: space-between;
 }
 
-@keyframes App-logo-float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
+.edit-text-button {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.edit-text-button:hover {
+  scale: 1.25;
+}
+
+.content-modal-text {
+  padding-left: 10px;
+  padding-right: 15px;
+  word-wrap: break-word;
+  overflow-y: scroll;
+}
+
+.change-content-message {
+  font-size: 12px;
+  color: #d72631;
+  position: absolute;
+  right: 40px;
+}
+
+.download-button {
+  margin-top: 5px;
+  padding: 5px 20px;
+  border: none;
+  border-radius: 15px;
+  background-color: rgba(69, 189, 153, 0.8);
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+
+  transition: all 0.3s linear, scale 0.5s ease-out;
+}
+
+.download-button:hover {
+  scale: 1.01;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }

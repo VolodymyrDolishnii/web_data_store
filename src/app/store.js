@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import foldersReducer from '../folders/forders';
+import photoReducer from '../photos/photos';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    folders: foldersReducer, 
+    photos: photoReducer,
   },
 });
