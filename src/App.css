@@ -548,3 +548,70 @@ audio {
   scale: 1.01;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+
+.filter-by-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.filter-by-button:hover {
+  scale: 1.03;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.filter-by-button:disabled {
+  cursor: not-allowed;
+}
+
+.filter-by-button:disabled:hover {
+  scale: 1;
+  box-shadow: none;
+}
+
+.form__field-folder {
+  font-family: inherit;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 1.3rem;
+  color: black;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+  width: 300px;
+}
+.form__field-folder::placeholder {
+  color: transparent;
+}
+.form__field-folder:placeholder-shown ~ .form__label-folder {
+  font-size: 1.3rem;
+  cursor: text;
+  top: 10px;
+}
+.form__label-folder {
+  position: absolute;
+  top: -10px;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: #9b9b9b;
+}
+.form__field-folder:focus {
+  padding-bottom: 6px;
+  font-weight: 700;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #11998e, #38ef7d);
+  border-image-slice: 1;
+}
+.form__field-folder:focus ~ .form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  color: #11998e;
+  font-weight: 700;
+}
+.form__field-folder:required, .form__field-folder:invalid {
+  box-shadow: none;
+}

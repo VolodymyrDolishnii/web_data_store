@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import '../App.css';
 import { addFolderDispatch, removeFolderDispatch } from '../folders/forders';
@@ -17,6 +17,17 @@ export function Folder({ folders, isLoading, isError }) {
   const [inputValue, setInputValue] = useState('');
   const [allFoldersDeleting, setAllFoldersDeleting] = useState(false);
   const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+  const [filteredFolders, setFilteredFolders] = useState([]);
+
+  useEffect(() => {
+    const newFolders = folders?.filter((item) => {
+        if (item.name.toLowerCase().includes(query.toLowerCase())) {
+            return item;
+        }
+    });
+    setFilteredFolders(newFolders);
+}, [query, folders]);
 
   function deleteAllFolders() {
     folders.forEach((folder) => {
@@ -37,8 +48,8 @@ export function Folder({ folders, isLoading, isError }) {
               ) : (
                 <h1 className='folder-counter'>Folders count: {folders.length}</h1>
               )}
-              <button 
-                className='delete-all-folders' 
+              <button
+                className='delete-all-folders'
                 disabled={folders.length <= 0}
                 onClick={() => {
                   if (allFoldersDeleting === true) {
@@ -50,6 +61,25 @@ export function Folder({ folders, isLoading, isError }) {
               >
                 Delete all folders
               </button>
+            </div>
+            <div style={{ position: 'relative', marginTop: '30px', marginLeft: '100px' }}>
+              <input
+                type="text"
+                className="form__field-folder"
+                placeholder="What are you looking for?"
+                name="folder"
+                id='folder'
+                required
+                autoComplete='off'
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                }}
+              />
+              <label htmlFor="folder" className="form__label-folder">Item name</label>
+              {query.length > 0 && (
+                <p style={{ marginTop: '10px' }}>Search result: {filteredFolders.length}</p>
+              )}
             </div>
             <button
               className='add-folder'
@@ -73,16 +103,16 @@ export function Folder({ folders, isLoading, isError }) {
                 </button>
                 <p className='deleting-modal_text'>Are you sure you want to delete all folders and their contents?</p>
                 <div className='deleting-modal_buttons-block'>
-                  <button 
+                  <button
                     className='deleting-modal_button'
                     onClick={() => {
                       deleteAllFolders();
                       setAllFoldersDeleting(false);
                     }}
                   >
-                      Yes
+                    Yes
                   </button>
-                  <button 
+                  <button
                     className='deleting-modal_button'
                     onClick={() => setAllFoldersDeleting(false)}
                   >
@@ -133,7 +163,7 @@ export function Folder({ folders, isLoading, isError }) {
               </div>
             )}
             <ul className='folders-list'>
-              {folders?.map(folder => (
+              {filteredFolders?.map(folder => (
                 <li className='folder' key={folder.date} onClick={() => navigate(folder.id)}>
                   <button
                     className='remove-button'

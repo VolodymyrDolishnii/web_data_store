@@ -40,6 +40,62 @@ export function InsideFolder({ folders }) {
     const changedTextRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
+    const [query, setQuery] = useState('');
+    const [filteredContent, setFilteredContent] = useState([]);
+    const [usedContentTypes, setUsedContentTypes] = useState([]);
+    const [filterBy, setFilterBy] = useState(null);
+    // const [sortList] = useState(['Date', 'Name']);
+    // const [sortBy, setSortBy] = useState('Date');
+
+
+    useEffect(() => {
+        const typesArr = [];
+
+        filteredContent?.forEach((item) => {
+            typesArr.push(item.fileContentType);
+        });
+
+        const uniqueValues = Array.from(new Set(typesArr));
+
+        setUsedContentTypes(uniqueValues);
+    }, [filteredContent]);
+
+    useEffect(() => {
+        setFilteredContent(selectedFolder?.content);
+    }, [selectedFolder?.content]);
+
+    useEffect(() => {
+        const newContent = selectedFolder?.content?.filter((item) => {
+            if (item.name.toLowerCase().includes(query.toLowerCase())) {
+                return item;
+            }
+        });
+
+        if (filterBy) {
+            const filteredNewContent = newContent.filter((item) => {
+                if (item.fileContentType === filterBy) {
+                    return item;
+                }
+            });
+            setFilteredContent(filteredNewContent);
+        } else {
+            setFilteredContent(newContent);
+        }
+    }, [query, filterBy]);
+
+    // function sortingBy() {
+    //     if (!sortBy) {
+    //         return;
+    //     }
+    //     if (sortBy === 'Name') {
+    //         const sortedContent = filteredContent.sort((a, b) => b.name.localeCompare(a.name));
+    //         return sortedContent;
+    //     }
+    //     if (sortBy === 'Date') {
+    //         const sortedContent = filteredContent.sort((a, b) => moment(b.date).diff(moment(a.date)));
+    //         return sortedContent;
+    //     }
+    // }
 
     useEffect(() => {
         if (selectedFolder) {
@@ -233,21 +289,21 @@ export function InsideFolder({ folders }) {
                         {selectedFolder?.name.length <= 40 ? (
                             <>
                                 <h1 className='inside-folder-header'>{selectedFolder?.name}
-                                <img
-                                    src={Copy}
-                                    width={20}
-                                    height={20}
-                                    className="copy-button"
-                                    onClick={() => {
-                                        if (isVisible) {
-                                            navigator.clipboard.writeText(selectedFolder?.name);
-                                            return;
-                                        } else {
-                                            copyToClipboard();
-                                        }
-                                    }}
-                                />
-                                {isVisible && <p className="copy-message">The folder name has been copied!</p>}
+                                    <img
+                                        src={Copy}
+                                        width={20}
+                                        height={20}
+                                        className="copy-button"
+                                        onClick={() => {
+                                            if (isVisible) {
+                                                navigator.clipboard.writeText(selectedFolder?.name);
+                                                return;
+                                            } else {
+                                                copyToClipboard();
+                                            }
+                                        }}
+                                    />
+                                    {isVisible && <p className="copy-message">The folder name has been copied!</p>}
                                 </h1>
                             </>
                         ) : (
@@ -289,7 +345,10 @@ export function InsideFolder({ folders }) {
                             >
                                 Add folder content
                             </button>
-                            <div className='form__group field' style={{ marginTop: '' }}>
+                            <div
+                                className='form__group field'
+                                style={{ display: selectedFolder.content.length > 0 ? 'block' : 'none' }}
+                            >
                                 <input
                                     type="text"
                                     className="form__field"
@@ -298,8 +357,19 @@ export function InsideFolder({ folders }) {
                                     id='name'
                                     required
                                     autoComplete='off'
+                                    value={query}
+                                    onChange={(event) => {
+                                        setQuery(event.target.value);
+                                    }}
                                 />
                                 <label htmlFor="name" className="form__label">Item name</label>
+                                <button
+                                    className='remove-button'
+                                    style={{ top: '23px', right: '-20px' }}
+                                    onClick={() => setQuery('')}
+                                >
+                                    <img src={Cross} height={20} width={10} />
+                                </button>
                             </div>
                         </div>
                     </header>
@@ -613,11 +683,82 @@ export function InsideFolder({ folders }) {
                             )}
                         </div>
                     )}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        paddingLeft: '100px',
+                        paddingRight: '150px',
+                        marginTop: '30px'
+                    }}
+                    >
+                        {usedContentTypes.length > 0 && (
+                            <div style={{ display: 'flex', gap: '20px' }}>
+                                <h2>Filter by</h2>
+                                <div style={{ display: "flex", gap: '15px', position: 'relative' }}>
+                                    {usedContentTypes.map((type) => (
+                                        <button
+                                            key={type}
+                                            className="filter-by-button"
+                                            style={{
+                                                borderRadius: '15px',
+                                                cursor: 'pointer',
+                                                backgroundColor: type === filterBy ? 'rgba(69, 189, 153, 0.8)' : '#e8e8e8',
+                                                border: 'none',
+                                                color: type === filterBy ? '#FFFFFF' : '#000000',
+                                                fontWeight: type === filterBy ? 700 : 400,
+                                            }}
+                                            onClick={() => {
+                                                if (filterBy === type) {
+                                                    setFilterBy(null);
+                                                } else {
+                                                    setFilterBy(type);
+                                                }
+                                            }}
+                                        >
+                                            {type === 'Any file type (only for download)' ? ('Only for download') : (type)}
+                                        </button>
+                                    ))}
+                                    <button
+                                        className='remove-button'
+                                        style={{ top: '5px', right: '-30px' }}
+                                        onClick={() => setFilterBy(null)}
+                                    >
+                                        <img src={Cross} height={20} width={10} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {/* <div style={{ display: 'flex', gap: '20px' }}>
+                            <h2>Sort by</h2>
+                            <div style={{ display: "flex", gap: '15px', position: 'relative' }}>
+                                {sortList.map((sort) => (
+                                    <button
+                                        key={sort}
+                                        className="filter-by-button"
+                                        style={{
+                                            borderRadius: '15px',
+                                            cursor: 'pointer',
+                                            backgroundColor: sort === sortBy ? 'rgba(69, 189, 153, 0.8)' : '#e8e8e8',
+                                            border: 'none',
+                                            color: sort === sortBy ? '#FFFFFF' : '#000000',
+                                            fontWeight: sort === sortBy ? 700 : 400,
+                                        }}
+                                        onClick={() => {
+                                            setSortBy(sort);
+                                        }}
+                                        disabled={sort === sortBy}
+                                    >
+                                        {sort}
+                                    </button>
+                                ))}
+                            </div>
+                        </div> */}
+                    </div>
                     <main>
                         <ul className="folders-list">
                             {selectedFolder?.content?.length > 0 ? (
                                 <>
-                                    {selectedFolder?.content?.map((item) => (
+                                    {filteredContent?.map((item) => (
                                         <>
                                             <li
                                                 key={item?.id}
@@ -867,6 +1008,13 @@ export function InsideFolder({ folders }) {
                                             )}
                                         </>
                                     ))}
+                                    {filteredContent.length === 0 && (
+                                        <p
+                                            style={{ position: 'absolute', left: '50%', translate: '-50%', fontWeight: 700, fontSize: '22px' }}
+                                        >
+                                            Such content does not exist
+                                        </p>
+                                    )}
                                 </>
                             ) : (
                                 <h1>This folder is currently empty</h1>
