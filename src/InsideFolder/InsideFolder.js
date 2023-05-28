@@ -190,7 +190,6 @@ export function InsideFolder({ folders }) {
     //         setChangedText(newValue);
     //     }
     //     // const newContent = { ...isContentExtended, text: changedText };
-    //     // console.log(changedText);
     //     setIsTextEditable(false);
     // };
 
