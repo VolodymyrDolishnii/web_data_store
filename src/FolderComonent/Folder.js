@@ -29,7 +29,7 @@ export function Folder({ folders, isLoading, isError }) {
   const [fileData, setFileData] = useState([]);
   const [isGenerating, setIsGenerating] = useState(null);
   const [uniqueValue, setUniqueValue] = useState(0);
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     setIsGenerating(false);
@@ -70,8 +70,6 @@ export function Folder({ folders, isLoading, isError }) {
     }
     worker.postMessage({ folders });
   }, [uniqueValue]);
-
-  console.log(fileData);
 
   return (
     <div className="App">
@@ -129,109 +127,113 @@ export function Folder({ folders, isLoading, isError }) {
                   className="form__label-folder"
                   style={{ cursor: isAdding ? 'not-allowed' : 'pointer' }}
                 >
-                  Item name
+                  Folder name
                 </label>
                 {query.length > 0 && (
                   <p style={{ marginTop: '10px' }}>Search result: {filteredFolders.length}</p>
                 )}
               </div>
-              <button
-                onClick={() => {
-                  if (isVisible) {
-                    setIsVisible(false);
-                  } else {
-                    setIsVisible(true);
-                  }
-                }}
-                className='file-export-button'
-              >
-                <p style={{ fontSize: '20px' }}>Export file</p> <img src={Download} width={20} height={20} />
-              </button>
-              {isVisible && (
-                <div
-                  onClick={(event) => {
-                    event.stopPropagation();
-                  }}
-                  className='export-menu'
-                >
-                  <div className='separators-list'>
+              {filteredFolders.length > 0 && (
+                <>
+                  <button
+                    onClick={() => {
+                      if (isVisible) {
+                        setIsVisible(false);
+                      } else {
+                        setIsVisible(true);
+                      }
+                    }}
+                    className='file-export-button'
+                  >
+                    <p style={{ fontSize: '20px' }}>Export file</p> <img src={Download} width={20} height={20} />
+                  </button>
+                  {isVisible && (
                     <div
                       onClick={(event) => {
                         event.stopPropagation();
-                        setSeparator(',');
                       }}
+                      className='export-menu'
                     >
-                      <input
-                        type={'radio'}
-                        id={'comma'}
-                        name={'group1'}
-                        defaultChecked
-                      />
-                      <label
-                        htmlFor={'comma'}
-                      >
-                        Comma
-                      </label>
-                    </div>
-                    <div
-                      onClick={() => setSeparator(';')}
-                    >
-                      <input
-                        type={'radio'}
-                        id={'semicolon'}
-                        name={'group1'}
-                      />
-                      <label
-                        htmlFor={'semicolon'}
-                      >
-                        Semicolon
-                      </label>
-                    </div>
-                    <div
-                      onClick={() => setSeparator('\t')}
-                    >
-                      <input
-                        type={'radio'}
-                        id={'tab'}
-                        name={'group1'}
-                      />
-                      <label
-                        htmlFor={'tab'}
-                      >
-                        Tab
-                      </label>
-                    </div>
-                  </div>
-                  {fileData.length > 0 ? (
-                    <CsvDownloadButton
-                      data={fileData}
-                      filename={`${moment().format('YYYY-MM-DD_HHmm')}_Folders.csv`}
-                      delimiter={separator}
-                      headers={getKeys(fileData)}
-                      className='download-file-button'
-                    >
-                      Download
-                    </CsvDownloadButton>
-                  ) : (
-                    <>
-                      {isGenerating ? (
-                        <div className='export-loader'>
-                          <Loader />
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setUniqueValue(new Date().valueOf());
-                            setIsGenerating(true);
+                      <div className='separators-list'>
+                        <div
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSeparator(',');
                           }}
+                        >
+                          <input
+                            type={'radio'}
+                            id={'comma'}
+                            name={'group1'}
+                            defaultChecked
+                          />
+                          <label
+                            htmlFor={'comma'}
+                          >
+                            Comma
+                          </label>
+                        </div>
+                        <div
+                          onClick={() => setSeparator(';')}
+                        >
+                          <input
+                            type={'radio'}
+                            id={'semicolon'}
+                            name={'group1'}
+                          />
+                          <label
+                            htmlFor={'semicolon'}
+                          >
+                            Semicolon
+                          </label>
+                        </div>
+                        <div
+                          onClick={() => setSeparator('\t')}
+                        >
+                          <input
+                            type={'radio'}
+                            id={'tab'}
+                            name={'group1'}
+                          />
+                          <label
+                            htmlFor={'tab'}
+                          >
+                            Tab
+                          </label>
+                        </div>
+                      </div>
+                      {fileData.length > 0 ? (
+                        <CsvDownloadButton
+                          data={fileData}
+                          filename={`${moment().format('YYYY-MM-DD_HHmm')}_Folders.csv`}
+                          delimiter={separator}
+                          headers={getKeys(fileData)}
                           className='download-file-button'
                         >
-                          Export
-                        </button>
+                          Download
+                        </CsvDownloadButton>
+                      ) : (
+                        <>
+                          {isGenerating ? (
+                            <div className='export-loader'>
+                              <Loader />
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setUniqueValue(new Date().valueOf());
+                                setIsGenerating(true);
+                              }}
+                              className='download-file-button'
+                            >
+                              Export
+                            </button>
+                          )}
+                        </>
                       )}
-                    </>
+                    </div>
                   )}
-                </div>
+                </>
               )}
             </div>
             <button
@@ -324,7 +326,8 @@ export function Folder({ folders, isLoading, isError }) {
                     if (isAdding) {
                       return;
                     }
-                    navigate(folder.id)
+                    navigate(folder.id);
+                    setUniqueValue(new Date().valueOf());
                   }}
                   style={{ cursor: isAdding ? 'not-allowed' : 'pointer' }}
                 >

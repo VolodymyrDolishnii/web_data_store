@@ -23,8 +23,14 @@ function App() {
    <>
       <Router>
           <Routes>
-            <Route path='/' element={<Folder folders={folders} isLoading={isLoading} isError={isError} />}></Route>
-            <Route path='/:id' element={<InsideFolder folders={folders} />}></Route>
+            <Route 
+              path='/' 
+              element={<Folder folders={folders} isLoading={isLoading} isError={isError} />}
+            ></Route>
+            <Route 
+              path='/:id' 
+              element={<InsideFolder folders={folders} />}
+            ></Route>
           </Routes>
       </Router>
    </>
